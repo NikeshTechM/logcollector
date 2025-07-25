@@ -49,7 +49,7 @@ int main() {
         log_disk_usage(f);
         fclose(f);
 
-        sleep(1);  // ✅ changed to 1 second-new
+        sleep(1);  // ✅ changed to 1 second-newone
     }
     return 0;
 }
