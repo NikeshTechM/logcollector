@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-int keep_running = 1;
+int keep_running = 3;
 
 void handle_sigint(int sig) {
     printf("\nReceived interrupt signal. Exiting...\n");
@@ -14,7 +14,7 @@ int main() {
     signal(SIGINT, handle_sigint);
 
     while (keep_running) {
-        printf("Hello from container v8.15\n");
+        printf("Hello from container v8.16\n");
         fflush(stdout);  // Flush output immediately
         sleep(1);
     }
