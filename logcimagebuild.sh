@@ -26,21 +26,6 @@ if [ ! -f "$BUILD_DIR/Dockerfile" ]; then
   exit 1
 fi
 
-# === Generate Hash of Current Build Context ===
-CURRENT_HASH=$(find "$BUILD_DIR" -type f ! -path "*/\.git/*" -exec sha256sum {} \; | sha256sum | awk '{print $1}')
-
-# === Compare With Last Build Hash ===
-if [[ -f "$HASH_FILE" ]]; then
-    LAST_HASH=$(cat "$HASH_FILE")
-    if [[ "$CURRENT_HASH" == "$LAST_HASH" ]]; then
-        echo "⚠️ No changes detected in build directory. Skipping build." | tee -a "$BUILD_LOG"
-        exit 0
-    fi
-fi
-
-# === Save Current Hash ===
-echo "$CURRENT_HASH" > "$HASH_FILE"
-
 # === Generate Tag Using Current Date-Time ===
 TIMESTAMP=$(date +"%Y%m%d%H%M%S")
 TAG="$TIMESTAMP"
