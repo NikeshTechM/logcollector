@@ -34,12 +34,21 @@ if [ ! -f "$BUILD_DIR/Dockerfile" ]; then
     exit 1
 fi
 
-# === Remove all previous images for this repo ===
-echo "🧹 Removing previous images for $IMAGE_NAME..." | tee -a "$BUILD_LOG"
-podman images --format "{{.Repository}}:{{.Tag}}" | grep "^${IMAGE_NAME}:" | while read -r old_image; do
-    echo "🔻 Removing image: $old_image" | tee -a "$BUILD_LOG"
-    podman rmi -f "$old_image" >> "$BUILD_LOG" 2>&1 || echo "⚠️ Could not remove $old_image" | tee -a "$BUILD_LOG"
-done
+# === Remove previous images ===
+echo "🧹 Checking for previous images matching $IMAGE_NAME..." | tee -a "$BUILD_LOG"
+OLD_IMAGES=$(podman images --format "{{.Repository}}:{{.Tag}}" | grep "^${IMAGE_NAME}:" || true)
+
+if [ -z "$OLD_IMAGES" ]; then
+    echo "ℹ️ No previous images found for $IMAGE_NAME. Skipping deletion." | tee -a "$BUILD_LOG"
+else
+    echo "🔻 Found previous images. Removing..." | tee -a "$BUILD_LOG"
+    while read -r old_image; do
+        echo "   ➤ Removing $old_image" | tee -a "$BUILD_LOG"
+        podman rmi -f "$old_image" >> "$BUILD_LOG" 2>&1 || echo "⚠️ Could not remove $old_image" | tee -a "$BUILD_LOG"
+    done <<< "$OLD_IMAGES"
+fi
+
+echo "🟢 Proceeding to login and build..." | tee -a "$BUILD_LOG"
 
 # === Login to Quay.io ===
 echo "🔐 Logging into Quay.io..." | tee -a "$BUILD_LOG"
