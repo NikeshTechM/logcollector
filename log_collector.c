@@ -14,7 +14,7 @@ int main() {
     signal(SIGINT, handle_sigint);
 
     while (keep_running) {
-        printf("Hello from container v8.36\n");
+        printf("Hello from container v8.37\n");
         fflush(stdout);  // Flush output immediately
         sleep(3);
     }
